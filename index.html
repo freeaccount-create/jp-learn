@@ -681,10 +681,14 @@ function renderQ() {
   document.getElementById('qIndex').textContent = pState.idx+1;
   document.getElementById('qCorrect').textContent = pState.correct;
   document.getElementById('qProgress').style.width = (pState.idx/pState.qs.length*100)+'%';
-  const body = document.getElementById('qBody');
+  // Completely replace qBody to wipe any state, listeners, focus, hover from previous question
+  const oldBody = document.getElementById('qBody');
+  const body = oldBody.cloneNode(false);
+  body.innerHTML = '';
+  oldBody.replaceWith(body);
   if (document.activeElement && document.activeElement.blur) document.activeElement.blur();
   body.style.pointerEvents = 'none';
-  setTimeout(() => { body.style.pointerEvents = ''; }, 350);
+  setTimeout(() => { body.style.pointerEvents = ''; }, 400);
   body.classList.remove('fade-in'); void body.offsetWidth; body.classList.add('fade-in');
 
   if (pState.mode === 'see') {
@@ -830,10 +834,13 @@ function renderTQ() {
   document.getElementById('tCorrect').textContent = tState.correct;
   document.getElementById('tWrong').textContent = tState.wrong;
   document.getElementById('tProgress').style.width = (tState.idx/tState.qs.length*100)+'%';
-  const body = document.getElementById('tBody');
+  const oldBody = document.getElementById('tBody');
+  const body = oldBody.cloneNode(false);
+  body.innerHTML = '';
+  oldBody.replaceWith(body);
   if (document.activeElement && document.activeElement.blur) document.activeElement.blur();
   body.style.pointerEvents = 'none';
-  setTimeout(() => { body.style.pointerEvents = ''; }, 350);
+  setTimeout(() => { body.style.pointerEvents = ''; }, 400);
   const k = q.kana;
   const ds = shuffle(tState.pool.filter(x=>x.r!==k.r)).slice(0,3);
   const opts = shuffle([k,...ds]);
