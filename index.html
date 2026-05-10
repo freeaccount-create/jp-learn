@@ -682,6 +682,9 @@ function renderQ() {
   document.getElementById('qCorrect').textContent = pState.correct;
   document.getElementById('qProgress').style.width = (pState.idx/pState.qs.length*100)+'%';
   const body = document.getElementById('qBody');
+  if (document.activeElement && document.activeElement.blur) document.activeElement.blur();
+  body.style.pointerEvents = 'none';
+  setTimeout(() => { body.style.pointerEvents = ''; }, 350);
   body.classList.remove('fade-in'); void body.offsetWidth; body.classList.add('fade-in');
 
   if (pState.mode === 'see') {
@@ -828,6 +831,9 @@ function renderTQ() {
   document.getElementById('tWrong').textContent = tState.wrong;
   document.getElementById('tProgress').style.width = (tState.idx/tState.qs.length*100)+'%';
   const body = document.getElementById('tBody');
+  if (document.activeElement && document.activeElement.blur) document.activeElement.blur();
+  body.style.pointerEvents = 'none';
+  setTimeout(() => { body.style.pointerEvents = ''; }, 350);
   const k = q.kana;
   const ds = shuffle(tState.pool.filter(x=>x.r!==k.r)).slice(0,3);
   const opts = shuffle([k,...ds]);
