@@ -54,6 +54,7 @@
       <div class="flex gap-1 overflow-x-auto" id="navLinks">
         <a href="#home" class="nav-link active" data-page="home">首页</a>
         <a href="#kana" class="nav-link" data-page="kana">五十音</a>
+        <a href="#vocab" class="nav-link" data-page="vocab">词汇</a>
         <a href="#practice" class="nav-link" data-page="practice">练习</a>
         <a href="#test" class="nav-link" data-page="test">测试</a>
         <a href="#pronounce" class="nav-link" data-page="pronounce">发音</a>
@@ -97,10 +98,10 @@
           <div class="text-3xl mb-2">🎤</div><h3 class="font-bold text-lg group-hover:text-rose-600">AI 发音检测</h3>
           <p class="text-sm text-slate-500 mt-1">浏览器实时识别 + 评分</p>
         </a>
-        <div class="block p-5 bg-slate-100 rounded-xl border-2 border-dashed">
-          <div class="text-3xl mb-2 opacity-50">📚</div>
-          <h3 class="font-bold text-lg text-slate-500">N5 词汇 (V2)</h3><p class="text-sm text-slate-400 mt-1">SRS 间隔重复 · 即将上线</p>
-        </div>
+        <a href="#vocab" class="block p-5 bg-white rounded-xl border hover:shadow-lg transition group">
+          <div class="text-3xl mb-2">📚</div><h3 class="font-bold text-lg group-hover:text-rose-600">N5 词汇</h3>
+          <p class="text-sm text-slate-500 mt-1">SRS 间隔重复 · 100+ 核心词</p>
+        </a>
         <div class="block p-5 bg-slate-100 rounded-xl border-2 border-dashed">
           <div class="text-3xl mb-2 opacity-50">📖</div>
           <h3 class="font-bold text-lg text-slate-500">语法体系 (V3)</h3><p class="text-sm text-slate-400 mt-1">N5 → N1 · 即将上线</p>
@@ -147,6 +148,91 @@
         <h2 class="text-lg font-bold mb-3">拗音 <span class="text-sm text-slate-400 font-normal">33 个</span></h2>
         <div id="yoon" class="space-y-2"></div>
       </section>
+    </section>
+
+    <!-- ===== VOCAB ===== -->
+    <section id="page-vocab" class="page">
+      <div id="vocabHome">
+        <div class="flex items-center justify-between flex-wrap gap-3 mb-5">
+          <div>
+            <h1 class="text-2xl font-bold">N5 核心词汇</h1>
+            <p class="text-sm text-slate-500 mt-1">SRS 间隔重复 · 记牢一辈子不忘</p>
+          </div>
+        </div>
+
+        <!-- 学习概览 -->
+        <section class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-5" id="vocabStats"></section>
+
+        <!-- 三大入口 -->
+        <div class="grid md:grid-cols-3 gap-4 mb-6">
+          <button onclick="startVocabReview()" class="p-5 bg-white rounded-xl border-2 hover:border-rose-400 text-left">
+            <div class="text-3xl mb-2">🔁</div>
+            <h3 class="font-bold">今日复习 <span id="vocabDueBadge" class="ml-1 text-xs bg-rose-500 text-white rounded-full px-2 py-0.5 hidden"></span></h3>
+            <p class="text-sm text-slate-500 mt-1">SRS 算法挑选今天该复习的词</p>
+          </button>
+          <button onclick="startVocabLearn()" class="p-5 bg-white rounded-xl border-2 hover:border-emerald-400 text-left">
+            <div class="text-3xl mb-2">📖</div>
+            <h3 class="font-bold">学习新词</h3>
+            <p class="text-sm text-slate-500 mt-1">每次 10 个还没学的新词</p>
+          </button>
+          <button onclick="startVocabQuiz()" class="p-5 bg-white rounded-xl border-2 hover:border-sky-400 text-left">
+            <div class="text-3xl mb-2">🎯</div>
+            <h3 class="font-bold">词汇测试</h3>
+            <p class="text-sm text-slate-500 mt-1">已学过的词选择题测试</p>
+          </button>
+        </div>
+
+        <!-- 分类浏览 -->
+        <h2 class="font-bold text-lg mb-3">分类浏览</h2>
+        <div id="vocabCats" class="space-y-3"></div>
+      </div>
+
+      <!-- 卡片学习/复习 -->
+      <div id="vocabCard" class="hidden max-w-2xl mx-auto">
+        <div class="flex items-center justify-between mb-3">
+          <button onclick="exitVocab()" class="text-sm text-slate-500 hover:text-rose-500">← 退出</button>
+          <div class="text-sm">
+            <span id="vIndex">1</span>/<span id="vTotal">10</span>
+            · <span id="vSubLabel" class="text-slate-500">学习中</span>
+          </div>
+        </div>
+        <div class="h-1 bg-slate-100 rounded-full mb-5 overflow-hidden">
+          <div id="vProgress" class="h-full bg-rose-500 transition-all"></div>
+        </div>
+        <div id="vCardBody" class="bg-white rounded-2xl p-6 border shadow-sm fade-in"></div>
+      </div>
+
+      <!-- 词汇测验 -->
+      <div id="vocabQuiz" class="hidden max-w-2xl mx-auto">
+        <div class="flex items-center justify-between mb-3">
+          <button onclick="exitVocab()" class="text-sm text-slate-500 hover:text-rose-500">← 退出</button>
+          <div class="text-sm">
+            <span id="vqIndex">1</span>/<span id="vqTotal">10</span>
+            · <span class="text-emerald-600">✓<span id="vqCorrect">0</span></span>
+          </div>
+        </div>
+        <div class="h-1 bg-slate-100 rounded-full mb-5 overflow-hidden">
+          <div id="vqProgress" class="h-full bg-rose-500 transition-all"></div>
+        </div>
+        <div id="vqBody" class="bg-white rounded-2xl p-6 border shadow-sm fade-in"></div>
+      </div>
+
+      <!-- 结果 -->
+      <div id="vocabResult" class="hidden max-w-2xl mx-auto">
+        <div class="bg-white rounded-2xl p-7 border text-center fade-in">
+          <div class="text-5xl mb-3" id="vrEmoji">🎉</div>
+          <h2 class="text-2xl font-bold mb-2" id="vrTitle">完成！</h2>
+          <div id="vrSummary" class="text-slate-500 mb-5"></div>
+          <div class="grid grid-cols-3 gap-3 mb-5">
+            <div class="bg-emerald-50 rounded-lg p-3"><div class="text-xs">认识</div><div class="text-2xl font-bold text-emerald-600" id="vrKnow"></div></div>
+            <div class="bg-rose-50 rounded-lg p-3"><div class="text-xs">不熟</div><div class="text-2xl font-bold text-rose-600" id="vrUnknow"></div></div>
+            <div class="bg-slate-50 rounded-lg p-3"><div class="text-xs">用时</div><div class="text-2xl font-bold" id="vrTime"></div></div>
+          </div>
+          <div class="flex gap-3 justify-center flex-wrap">
+            <button onclick="exitVocab()" class="btn-secondary">返回</button>
+          </div>
+        </div>
+      </div>
     </section>
 
     <!-- ===== PRACTICE ===== -->
@@ -418,9 +504,185 @@ function flatKana(dak=true, yo=true) {
   return a;
 }
 
+/* ============== N5 VOCAB DATA ============== */
+// id: stable key for SRS storage; jp: kanji form; kn: kana; cn: meaning; ex: example sentence
+const VOCAB = [
+  // 人称 / 称呼
+  { c:'人称', items: [
+    { id:'v_watashi', jp:'私', kn:'わたし', cn:'我', ex:'私は学生です。' },
+    { id:'v_anata', jp:'あなた', kn:'あなた', cn:'你', ex:'あなたは誰ですか。' },
+    { id:'v_kare', jp:'彼', kn:'かれ', cn:'他', ex:'彼は先生です。' },
+    { id:'v_kanojo', jp:'彼女', kn:'かのじょ', cn:'她', ex:'彼女は親切です。' },
+    { id:'v_minasan', jp:'皆さん', kn:'みなさん', cn:'大家', ex:'皆さん、こんにちは。' },
+  ]},
+  // 家庭
+  { c:'家庭', items: [
+    { id:'v_otousan', jp:'お父さん', kn:'おとうさん', cn:'父亲', ex:'お父さんは医者です。' },
+    { id:'v_okaasan', jp:'お母さん', kn:'おかあさん', cn:'母亲', ex:'お母さんは優しい。' },
+    { id:'v_oniichan', jp:'お兄さん', kn:'おにいさん', cn:'哥哥', ex:'お兄さんは大学生。' },
+    { id:'v_oneechan', jp:'お姉さん', kn:'おねえさん', cn:'姐姐', ex:'お姉さんは綺麗。' },
+    { id:'v_otouto', jp:'弟', kn:'おとうと', cn:'弟弟', ex:'弟は中学生です。' },
+    { id:'v_imouto', jp:'妹', kn:'いもうと', cn:'妹妹', ex:'妹は可愛い。' },
+    { id:'v_kazoku', jp:'家族', kn:'かぞく', cn:'家人', ex:'家族と旅行する。' },
+  ]},
+  // 数字
+  { c:'数字', items: [
+    { id:'v_ichi', jp:'一', kn:'いち', cn:'1', ex:'一つください。' },
+    { id:'v_ni', jp:'二', kn:'に', cn:'2', ex:'二人で行く。' },
+    { id:'v_san', jp:'三', kn:'さん', cn:'3', ex:'三時に会う。' },
+    { id:'v_yon', jp:'四', kn:'よん/し', cn:'4', ex:'四階です。' },
+    { id:'v_go', jp:'五', kn:'ご', cn:'5', ex:'五分待って。' },
+    { id:'v_roku', jp:'六', kn:'ろく', cn:'6', ex:'六月です。' },
+    { id:'v_nana', jp:'七', kn:'なな/しち', cn:'7', ex:'七時に起きる。' },
+    { id:'v_hachi', jp:'八', kn:'はち', cn:'8', ex:'八月生まれ。' },
+    { id:'v_kyuu', jp:'九', kn:'きゅう/く', cn:'9', ex:'九番目。' },
+    { id:'v_juu', jp:'十', kn:'じゅう', cn:'10', ex:'十時に着く。' },
+    { id:'v_hyaku', jp:'百', kn:'ひゃく', cn:'100', ex:'百円です。' },
+    { id:'v_sen', jp:'千', kn:'せん', cn:'1000', ex:'千円です。' },
+  ]},
+  // 时间
+  { c:'时间', items: [
+    { id:'v_ima', jp:'今', kn:'いま', cn:'现在', ex:'今、何時ですか。' },
+    { id:'v_kyou', jp:'今日', kn:'きょう', cn:'今天', ex:'今日は寒い。' },
+    { id:'v_ashita', jp:'明日', kn:'あした', cn:'明天', ex:'明日会いましょう。' },
+    { id:'v_kinou', jp:'昨日', kn:'きのう', cn:'昨天', ex:'昨日のテスト。' },
+    { id:'v_asa', jp:'朝', kn:'あさ', cn:'早上', ex:'朝ご飯を食べる。' },
+    { id:'v_hiru', jp:'昼', kn:'ひる', cn:'中午', ex:'昼休み。' },
+    { id:'v_yoru', jp:'夜', kn:'よる', cn:'夜晚', ex:'夜は静かです。' },
+    { id:'v_jikan', jp:'時間', kn:'じかん', cn:'时间', ex:'時間がない。' },
+    { id:'v_nen', jp:'年', kn:'ねん', cn:'年', ex:'今年は2026年。' },
+    { id:'v_tsuki', jp:'月', kn:'つき', cn:'月/月份', ex:'来月会う。' },
+    { id:'v_shuu', jp:'週', kn:'しゅう', cn:'周', ex:'今週は忙しい。' },
+  ]},
+  // 食物饮料
+  { c:'食物', items: [
+    { id:'v_gohan', jp:'ご飯', kn:'ごはん', cn:'米饭/饭', ex:'ご飯を食べる。' },
+    { id:'v_pan', jp:'パン', kn:'パン', cn:'面包', ex:'パンを買う。' },
+    { id:'v_mizu', jp:'水', kn:'みず', cn:'水', ex:'水を飲む。' },
+    { id:'v_ocha', jp:'お茶', kn:'おちゃ', cn:'茶', ex:'お茶を飲む。' },
+    { id:'v_koohii', jp:'コーヒー', kn:'コーヒー', cn:'咖啡', ex:'コーヒーが好き。' },
+    { id:'v_tamago', jp:'卵', kn:'たまご', cn:'鸡蛋', ex:'卵を買う。' },
+    { id:'v_sakana', jp:'魚', kn:'さかな', cn:'鱼', ex:'魚を食べる。' },
+    { id:'v_niku', jp:'肉', kn:'にく', cn:'肉', ex:'肉が好きです。' },
+    { id:'v_yasai', jp:'野菜', kn:'やさい', cn:'蔬菜', ex:'野菜を食べる。' },
+    { id:'v_kudamono', jp:'果物', kn:'くだもの', cn:'水果', ex:'果物が好き。' },
+    { id:'v_ringo', jp:'りんご', kn:'りんご', cn:'苹果', ex:'りんごを食べる。' },
+    { id:'v_oishii', jp:'美味しい', kn:'おいしい', cn:'好吃', ex:'これは美味しい。' },
+  ]},
+  // 颜色
+  { c:'颜色', items: [
+    { id:'v_aka', jp:'赤', kn:'あか', cn:'红色', ex:'赤いりんご。' },
+    { id:'v_ao', jp:'青', kn:'あお', cn:'蓝色', ex:'青い空。' },
+    { id:'v_kiiro', jp:'黄色', kn:'きいろ', cn:'黄色', ex:'黄色い花。' },
+    { id:'v_shiro', jp:'白', kn:'しろ', cn:'白色', ex:'白いシャツ。' },
+    { id:'v_kuro', jp:'黒', kn:'くろ', cn:'黑色', ex:'黒い猫。' },
+    { id:'v_midori', jp:'緑', kn:'みどり', cn:'绿色', ex:'緑の葉。' },
+  ]},
+  // 居家
+  { c:'居家', items: [
+    { id:'v_ie', jp:'家', kn:'いえ', cn:'家', ex:'家に帰る。' },
+    { id:'v_heya', jp:'部屋', kn:'へや', cn:'房间', ex:'部屋を掃除する。' },
+    { id:'v_isu', jp:'椅子', kn:'いす', cn:'椅子', ex:'椅子に座る。' },
+    { id:'v_tsukue', jp:'机', kn:'つくえ', cn:'桌子', ex:'机の上の本。' },
+    { id:'v_doa', jp:'ドア', kn:'ドア', cn:'门', ex:'ドアを開ける。' },
+    { id:'v_mado', jp:'窓', kn:'まど', cn:'窗户', ex:'窓を閉める。' },
+    { id:'v_terebi', jp:'テレビ', kn:'テレビ', cn:'电视', ex:'テレビを見る。' },
+    { id:'v_denwa', jp:'電話', kn:'でんわ', cn:'电话', ex:'電話をする。' },
+    { id:'v_kagi', jp:'鍵', kn:'かぎ', cn:'钥匙', ex:'鍵を忘れた。' },
+  ]},
+  // 学校 / 工作
+  { c:'学校工作', items: [
+    { id:'v_gakkou', jp:'学校', kn:'がっこう', cn:'学校', ex:'学校に行く。' },
+    { id:'v_sensei', jp:'先生', kn:'せんせい', cn:'老师', ex:'田中先生です。' },
+    { id:'v_gakusei', jp:'学生', kn:'がくせい', cn:'学生', ex:'私は学生です。' },
+    { id:'v_hon', jp:'本', kn:'ほん', cn:'书', ex:'本を読む。' },
+    { id:'v_pen', jp:'ペン', kn:'ペン', cn:'笔', ex:'ペンで書く。' },
+    { id:'v_kami', jp:'紙', kn:'かみ', cn:'纸', ex:'紙に書く。' },
+    { id:'v_kaisha', jp:'会社', kn:'かいしゃ', cn:'公司', ex:'会社に行く。' },
+    { id:'v_shigoto', jp:'仕事', kn:'しごと', cn:'工作', ex:'仕事が多い。' },
+    { id:'v_nihongo', jp:'日本語', kn:'にほんご', cn:'日语', ex:'日本語を勉強する。' },
+  ]},
+  // 交通 / 地点
+  { c:'交通地点', items: [
+    { id:'v_eki', jp:'駅', kn:'えき', cn:'车站', ex:'駅で会う。' },
+    { id:'v_densha', jp:'電車', kn:'でんしゃ', cn:'电车', ex:'電車に乗る。' },
+    { id:'v_basu', jp:'バス', kn:'バス', cn:'巴士', ex:'バスを待つ。' },
+    { id:'v_kuruma', jp:'車', kn:'くるま', cn:'车', ex:'車を運転する。' },
+    { id:'v_jitensha', jp:'自転車', kn:'じてんしゃ', cn:'自行车', ex:'自転車で行く。' },
+    { id:'v_michi', jp:'道', kn:'みち', cn:'道路', ex:'道を歩く。' },
+    { id:'v_machi', jp:'町', kn:'まち', cn:'城镇', ex:'静かな町。' },
+    { id:'v_mise', jp:'店', kn:'みせ', cn:'店', ex:'店を開く。' },
+    { id:'v_byouin', jp:'病院', kn:'びょういん', cn:'医院', ex:'病院に行く。' },
+    { id:'v_ginkou', jp:'銀行', kn:'ぎんこう', cn:'银行', ex:'銀行で働く。' },
+  ]},
+  // 自然 / 天气
+  { c:'自然', items: [
+    { id:'v_yama', jp:'山', kn:'やま', cn:'山', ex:'山に登る。' },
+    { id:'v_kawa', jp:'川', kn:'かわ', cn:'河', ex:'川で泳ぐ。' },
+    { id:'v_umi', jp:'海', kn:'うみ', cn:'海', ex:'海に行く。' },
+    { id:'v_sora', jp:'空', kn:'そら', cn:'天空', ex:'空が青い。' },
+    { id:'v_hana', jp:'花', kn:'はな', cn:'花', ex:'花が咲く。' },
+    { id:'v_ki', jp:'木', kn:'き', cn:'树', ex:'木の下で休む。' },
+    { id:'v_ame', jp:'雨', kn:'あめ', cn:'雨', ex:'雨が降る。' },
+    { id:'v_yuki', jp:'雪', kn:'ゆき', cn:'雪', ex:'雪が降る。' },
+    { id:'v_kaze', jp:'風', kn:'かぜ', cn:'风', ex:'風が強い。' },
+    { id:'v_taiyou', jp:'太陽', kn:'たいよう', cn:'太阳', ex:'太陽が出た。' },
+  ]},
+  // 动词（基础）
+  { c:'动词', items: [
+    { id:'v_taberu', jp:'食べる', kn:'たべる', cn:'吃', ex:'りんごを食べる。' },
+    { id:'v_nomu', jp:'飲む', kn:'のむ', cn:'喝', ex:'水を飲む。' },
+    { id:'v_iku', jp:'行く', kn:'いく', cn:'去', ex:'学校へ行く。' },
+    { id:'v_kuru', jp:'来る', kn:'くる', cn:'来', ex:'友達が来る。' },
+    { id:'v_kaeru', jp:'帰る', kn:'かえる', cn:'回去', ex:'家に帰る。' },
+    { id:'v_miru', jp:'見る', kn:'みる', cn:'看', ex:'映画を見る。' },
+    { id:'v_kiku', jp:'聞く', kn:'きく', cn:'听/问', ex:'音楽を聞く。' },
+    { id:'v_yomu', jp:'読む', kn:'よむ', cn:'读', ex:'本を読む。' },
+    { id:'v_kaku', jp:'書く', kn:'かく', cn:'写', ex:'手紙を書く。' },
+    { id:'v_hanasu', jp:'話す', kn:'はなす', cn:'说', ex:'日本語を話す。' },
+    { id:'v_aru', jp:'有る', kn:'ある', cn:'有(物)', ex:'本がある。' },
+    { id:'v_iru', jp:'居る', kn:'いる', cn:'有(人/动物)', ex:'猫がいる。' },
+    { id:'v_suru', jp:'する', kn:'する', cn:'做', ex:'勉強をする。' },
+    { id:'v_kau', jp:'買う', kn:'かう', cn:'买', ex:'本を買う。' },
+    { id:'v_uru', jp:'売る', kn:'うる', cn:'卖', ex:'車を売る。' },
+    { id:'v_au', jp:'会う', kn:'あう', cn:'见', ex:'友達に会う。' },
+    { id:'v_neru', jp:'寝る', kn:'ねる', cn:'睡', ex:'早く寝る。' },
+    { id:'v_okiru', jp:'起きる', kn:'おきる', cn:'起床', ex:'七時に起きる。' },
+  ]},
+  // 形容词
+  { c:'形容词', items: [
+    { id:'v_ookii', jp:'大きい', kn:'おおきい', cn:'大', ex:'大きい家。' },
+    { id:'v_chiisai', jp:'小さい', kn:'ちいさい', cn:'小', ex:'小さい犬。' },
+    { id:'v_takai', jp:'高い', kn:'たかい', cn:'高/贵', ex:'高い山。' },
+    { id:'v_yasui', jp:'安い', kn:'やすい', cn:'便宜', ex:'安い店。' },
+    { id:'v_atarashii', jp:'新しい', kn:'あたらしい', cn:'新', ex:'新しい本。' },
+    { id:'v_furui', jp:'古い', kn:'ふるい', cn:'旧', ex:'古い建物。' },
+    { id:'v_ii', jp:'良い', kn:'いい', cn:'好', ex:'いい天気。' },
+    { id:'v_warui', jp:'悪い', kn:'わるい', cn:'坏', ex:'天気が悪い。' },
+    { id:'v_atsui', jp:'暑い', kn:'あつい', cn:'热', ex:'今日は暑い。' },
+    { id:'v_samui', jp:'寒い', kn:'さむい', cn:'冷', ex:'冬は寒い。' },
+    { id:'v_omoshiroi', jp:'面白い', kn:'おもしろい', cn:'有趣', ex:'面白い映画。' },
+    { id:'v_isogashii', jp:'忙しい', kn:'いそがしい', cn:'忙', ex:'毎日忙しい。' },
+  ]},
+  // 招呼语
+  { c:'招呼语', items: [
+    { id:'v_konnichiwa', jp:'こんにちは', kn:'こんにちは', cn:'你好', ex:'こんにちは、お元気ですか。' },
+    { id:'v_ohayou', jp:'おはよう', kn:'おはよう', cn:'早上好', ex:'おはようございます。' },
+    { id:'v_konbanwa', jp:'こんばんは', kn:'こんばんは', cn:'晚上好', ex:'こんばんは。' },
+    { id:'v_arigatou', jp:'ありがとう', kn:'ありがとう', cn:'谢谢', ex:'ありがとうございます。' },
+    { id:'v_sumimasen', jp:'すみません', kn:'すみません', cn:'对不起/打扰', ex:'すみません、駅はどこ。' },
+    { id:'v_sayounara', jp:'さようなら', kn:'さようなら', cn:'再见', ex:'さようなら、また明日。' },
+    { id:'v_hajimemashite', jp:'初めまして', kn:'はじめまして', cn:'初次见面', ex:'初めまして、田中です。' },
+    { id:'v_yoroshiku', jp:'よろしく', kn:'よろしく', cn:'请多关照', ex:'よろしくお願いします。' },
+  ]},
+];
+
+function flatVocab() { return VOCAB.flatMap(c => c.items.map(it => ({ ...it, cat: c.c }))); }
+function vocabById(id) { return flatVocab().find(v => v.id === id); }
+
 /* ============== STORAGE ============== */
 const ST = {
-  K: { p:'jp_progress_kana', s:'jp_streak', m:'jp_mistakes', se:'jp_sessions', cf:'jp_settings' },
+  K: { p:'jp_progress_kana', s:'jp_streak', m:'jp_mistakes', se:'jp_sessions', cf:'jp_settings', vp:'jp_progress_vocab' },
   get(k,f) { try { const v=localStorage.getItem(k); return v?JSON.parse(v):f; } catch { return f; } },
   set(k,v) { localStorage.setItem(k,JSON.stringify(v)); },
   getKP() { return this.get(this.K.p, {}); },
@@ -433,6 +695,40 @@ const ST = {
     all[r] = it;
     this.set(this.K.p, all);
     this.touchStreak();
+  },
+  // Vocab SRS (SM-2 simplified): { id: { box:0-5, due:ts, correct, wrong, last, ease } }
+  // intervals (hours): box 0=4h, 1=24h, 2=3d, 3=7d, 4=14d, 5=30d
+  getVP() { return this.get(this.K.vp, {}); },
+  vocabIntervalMs(box) {
+    const hours = [4, 24, 24*3, 24*7, 24*14, 24*30];
+    return hours[Math.max(0, Math.min(5, box))] * 3600 * 1000;
+  },
+  recVocab(id, ok) {
+    const all = this.getVP();
+    const it = all[id] || { box:0, due:0, correct:0, wrong:0, last:0, seen:false };
+    it.seen = true;
+    if (ok) { it.correct++; it.box = Math.min(5, it.box + 1); }
+    else { it.wrong++; it.box = 0; }
+    it.last = Date.now();
+    it.due = Date.now() + this.vocabIntervalMs(it.box);
+    all[id] = it;
+    this.set(this.K.vp, all);
+    this.touchStreak();
+    return it;
+  },
+  // Words due for review now (or have never been seen but introduced)
+  vocabDueIds() {
+    const all = this.getVP();
+    const now = Date.now();
+    return Object.entries(all).filter(([, v]) => v.seen && v.due <= now).map(([k]) => k);
+  },
+  vocabSeenIds() {
+    const all = this.getVP();
+    return Object.entries(all).filter(([, v]) => v.seen).map(([k]) => k);
+  },
+  vocabMasteredCount() {
+    const all = this.getVP();
+    return Object.values(all).filter(v => v.box >= 4).length;
   },
   getStreak() { return this.get(this.K.s, { days:0, last:null, total:0, dates:[] }); },
   touchStreak() {
@@ -512,6 +808,7 @@ function showPage(name) {
   window.scrollTo(0, 0);
   if (name === 'home') renderHome();
   if (name === 'kana') renderKanaPage();
+  if (name === 'vocab') exitVocab();
   if (name === 'test') renderTestHistory();
   if (name === 'pronounce') { pickPronounceTarget(); renderPronounceHistory(); }
   if (name === 'profile') renderProfile();
@@ -528,12 +825,14 @@ function renderHome() {
   const learned = Object.values(kp).filter(x=>x.level>=1).length;
   const mastered = Object.values(kp).filter(x=>x.level>=4).length;
   const streak = ST.getStreak();
-  const totalC = Object.values(kp).reduce((s,x)=>s+(x.correct||0),0);
+  const allVocab = flatVocab();
+  const vSeen = ST.vocabSeenIds().length;
+  const vDue = ST.vocabDueIds().length;
   const cards = [
-    { l:'已学习', v:learned+'/'+all.length, sub:'种假名', c:'rose' },
-    { l:'已掌握', v:mastered, sub:'熟练度≥4', c:'emerald' },
+    { l:'假名掌握', v:`${mastered}/${all.length}`, sub:`已学 ${learned}`, c:'rose' },
+    { l:'词汇已学', v:`${vSeen}/${allVocab.length}`, sub:vDue>0?`待复习 ${vDue}`:'继续学新词', c:'emerald' },
     { l:'连续打卡', v:streak.days||0, sub:'天', c:'amber' },
-    { l:'累计答对', v:totalC, sub:(streak.total||0)+' 天累计', c:'sky' },
+    { l:'累计天数', v:streak.total||0, sub:'累计学习天数', c:'sky' },
   ];
   document.getElementById('stats').innerHTML = cards.map(c=>`
     <div class="bg-white rounded-xl p-4 border">
@@ -546,6 +845,13 @@ function renderHome() {
   const unl = allG.filter(k=>!kp[k.r]||kp[k.r].level===0);
   const weak = allG.filter(k=>kp[k.r]&&kp[k.r].level>0&&kp[k.r].level<3);
   let html = '';
+  if (vDue > 0) {
+    html += `<div class="mb-4 p-3 bg-rose-50 border border-rose-200 rounded-lg">
+      <div class="font-semibold text-rose-700">📚 ${vDue} 个词到了复习时间</div>
+      <div class="text-xs text-rose-600 mt-1">SRS 提示：现在复习能记得最牢</div>
+      <a href="#vocab" class="inline-block mt-2 text-rose-600 text-sm hover:underline font-medium">立即复习 →</a>
+    </div>`;
+  }
   if (unl.length) html += `<div class="mb-4">
       <div class="text-sm text-slate-600 mb-2">📌 还没学习的假名</div>
       <div class="flex flex-wrap gap-2">${unl.slice(0,5).map(k=>`
@@ -554,7 +860,7 @@ function renderHome() {
         </button>`).join('')}</div>
       <a href="#kana" class="inline-block mt-3 text-rose-600 text-sm hover:underline">去五十音图 →</a>
     </div>`;
-  if (weak.length) html += `<div>
+  if (weak.length) html += `<div class="mb-4">
       <div class="text-sm text-slate-600 mb-2">⚠️ 需要加强（熟练度&lt;3）</div>
       <div class="flex flex-wrap gap-2">${weak.slice(0,8).map(k=>`
         <button onclick="SPK.play('${k.h}')" class="bg-amber-50 hover:bg-amber-100 border border-amber-200 px-3 py-2 rounded-lg text-center min-w-[60px]">
@@ -562,11 +868,18 @@ function renderHome() {
         </button>`).join('')}</div>
       <a href="#practice" class="inline-block mt-3 text-rose-600 text-sm hover:underline">立即练习 →</a>
     </div>`;
+  if (vSeen < allVocab.length) {
+    const newCount = Math.min(10, allVocab.length - vSeen);
+    html += `<div class="mb-1">
+      <div class="text-sm text-slate-600 mb-1">📖 还有 ${allVocab.length - vSeen} 个新词没学</div>
+      <a href="#vocab" class="text-emerald-600 text-sm hover:underline">去学 ${newCount} 个新词 →</a>
+    </div>`;
+  }
   if (!html) html = `<div class="text-center py-6">
       <div class="text-4xl mb-2">🎉</div>
-      <div class="font-semibold">所有清音都已开始学习！</div>
-      <div class="text-sm text-slate-500 mt-1">继续练习提升熟练度</div>
-      <a href="#kana" class="btn-primary inline-block mt-4">前往五十音图</a></div>`;
+      <div class="font-semibold">所有内容都已开始学习！</div>
+      <div class="text-sm text-slate-500 mt-1">继续练习巩固熟练度</div>
+      <a href="#kana" class="btn-primary inline-block mt-4">回到五十音</a></div>`;
   document.getElementById('recommend').innerHTML = html;
 }
 
@@ -1177,12 +1490,13 @@ function renderProfile() {
   if (!acts.length) aEl.innerHTML = '<div class="text-sm text-slate-400 py-2">还没有学习记录</div>';
   else aEl.innerHTML = acts.map(s => {
     const d = new Date(s.ts);
-    const lab = { practice:'练习', test:'测试', pronounce:'发音' }[s.type] || s.type;
-    const col = { practice:'sky', test:'rose', pronounce:'emerald' }[s.type] || 'slate';
+    const lab = { practice:'练习', test:'测试', pronounce:'发音', vocab:'词汇' }[s.type] || s.type;
+    const col = { practice:'sky', test:'rose', pronounce:'emerald', vocab:'amber' }[s.type] || 'slate';
     let det = '';
     if (s.type === 'practice') det = `${s.mode} · ${s.correct}/${s.total}`;
     else if (s.type === 'test') det = `${s.tier} · ${s.score}分 · ${s.correct}/${s.total}`;
     else if (s.type === 'pronounce') det = `${s.target} · ${s.score}分`;
+    else if (s.type === 'vocab') det = `${({learn:'学新词',review:'复习',quiz:'测试'})[s.mode]||s.mode} · ${s.know}/${s.total}`;
     return `<div class="flex items-center justify-between p-2 rounded hover:bg-slate-50">
       <div class="flex items-center gap-3 min-w-0">
         <span class="text-xs px-2 py-0.5 rounded bg-${col}-100 text-${col}-700">${lab}</span>
@@ -1217,6 +1531,283 @@ function doReset() {
   if (!confirm('确定要清除所有学习数据吗？此操作不可恢复。')) return;
   ST.reset(); toast('已清除','success');
   setTimeout(()=>location.reload(),500);
+}
+
+/* ============== VOCAB ============== */
+let vState = null;
+
+function renderVocabHome() {
+  const all = flatVocab();
+  const vp = ST.getVP();
+  const seen = ST.vocabSeenIds().length;
+  const due = ST.vocabDueIds().length;
+  const mastered = ST.vocabMasteredCount();
+  const cards = [
+    { l:'词汇总数', v:all.length, sub:'N5 核心', c:'rose' },
+    { l:'已学过', v:seen, sub:'累计接触', c:'emerald' },
+    { l:'已掌握', v:mastered, sub:'熟练度≥4', c:'amber' },
+    { l:'今日待复习', v:due, sub:due > 0 ? '点上方复习' : '继续学新词', c:'sky' },
+  ];
+  document.getElementById('vocabStats').innerHTML = cards.map(c=>`
+    <div class="bg-white rounded-xl p-3 border">
+      <div class="text-xs text-slate-500">${c.l}</div>
+      <div class="text-2xl font-bold text-${c.c}-600 mt-1">${c.v}</div>
+      <div class="text-xs text-slate-400 mt-0.5">${c.sub}</div>
+    </div>`).join('');
+
+  const dueBadge = document.getElementById('vocabDueBadge');
+  if (due > 0) { dueBadge.textContent = due; dueBadge.classList.remove('hidden'); }
+  else dueBadge.classList.add('hidden');
+
+  // categories
+  document.getElementById('vocabCats').innerHTML = VOCAB.map((cat, ci) => {
+    const total = cat.items.length;
+    const learned = cat.items.filter(it => vp[it.id]?.seen).length;
+    const mast = cat.items.filter(it => (vp[it.id]?.box || 0) >= 4).length;
+    const wordsHtml = cat.items.map(it => {
+      const box = vp[it.id]?.box || 0;
+      const seen = vp[it.id]?.seen;
+      const bg = seen ? ['#e2e8f0','#fde68a','#fcd34d','#86efac','#4ade80','#16a34a'][box] : '#fff';
+      const fg = box >= 3 ? '#fff' : '#1e293b';
+      return `<div class="rounded-lg border px-2 py-1.5 cursor-pointer hover:shadow text-center"
+        style="background:${bg};color:${fg};" onclick="SPK.play('${it.kn}')" title="${it.cn} · 熟练度 ${box}/5">
+        <div class="font-semibold">${it.jp}</div>
+        <div class="text-[10px] opacity-75">${it.cn}</div>
+      </div>`;
+    }).join('');
+    return `<div class="bg-white rounded-xl border overflow-hidden">
+      <button class="w-full px-4 py-3 flex items-center justify-between hover:bg-slate-50" onclick="document.getElementById('vc-${ci}').classList.toggle('hidden')">
+        <div class="flex items-center gap-3">
+          <span class="font-bold">${cat.c}</span>
+          <span class="text-xs text-slate-500">${learned}/${total} 学过 · ${mast} 掌握</span>
+        </div>
+        <span class="text-slate-400">▾</span>
+      </button>
+      <div id="vc-${ci}" class="hidden p-3 grid gap-2" style="grid-template-columns:repeat(auto-fill,minmax(80px,1fr));">${wordsHtml}</div>
+    </div>`;
+  }).join('');
+}
+
+function startVocabReview() {
+  const dueIds = ST.vocabDueIds();
+  if (!dueIds.length) {
+    toast('暂无需要复习的词，先学新词吧', 'info');
+    return;
+  }
+  const items = dueIds.map(vocabById).filter(Boolean);
+  vState = {
+    mode:'review', items, idx:0, know:0, unknow:0, startTs:Date.now(),
+  };
+  showVCard();
+}
+
+function startVocabLearn() {
+  const seenSet = new Set(ST.vocabSeenIds());
+  const newOnes = flatVocab().filter(v => !seenSet.has(v.id)).slice(0, 10);
+  if (!newOnes.length) {
+    toast('已经学完所有词汇！来复习吧', 'success');
+    return;
+  }
+  vState = {
+    mode:'learn', items:newOnes, idx:0, know:0, unknow:0, startTs:Date.now(),
+  };
+  showVCard();
+}
+
+function showVCard() {
+  document.getElementById('vocabHome').classList.add('hidden');
+  document.getElementById('vocabResult').classList.add('hidden');
+  document.getElementById('vocabQuiz').classList.add('hidden');
+  document.getElementById('vocabCard').classList.remove('hidden');
+  document.getElementById('vTotal').textContent = vState.items.length;
+  document.getElementById('vSubLabel').textContent = vState.mode === 'learn' ? '学新词' : '复习';
+  renderVCard();
+}
+
+function renderVCard() {
+  const item = vState.items[vState.idx];
+  document.getElementById('vIndex').textContent = vState.idx + 1;
+  document.getElementById('vProgress').style.width = (vState.idx / vState.items.length * 100) + '%';
+
+  const oldBody = document.getElementById('vCardBody');
+  const body = oldBody.cloneNode(false);
+  body.innerHTML = '';
+  oldBody.replaceWith(body);
+  body.classList.remove('fade-in'); void body.offsetWidth; body.classList.add('fade-in');
+
+  const vp = ST.getVP()[item.id];
+  const boxLabel = vp ? `已学 · 熟练度 ${vp.box}/5` : '新词';
+
+  body.innerHTML = `
+    <div class="text-center mb-4">
+      <div class="text-xs text-slate-400 mb-1">${item.cat} · ${boxLabel}</div>
+      <div class="text-5xl font-bold mb-2">${item.jp}</div>
+      <div class="text-xl text-slate-500" id="vKana"></div>
+      <button onclick="SPK.play('${item.kn}')" class="mt-3 text-rose-500 hover:underline text-sm">🔊 发音</button>
+    </div>
+    <div id="vBack" class="hidden mt-4 pt-4 border-t fade-in">
+      <div class="bg-slate-50 rounded-lg p-3 mb-3">
+        <div class="text-xs text-slate-500 mb-1">假名</div>
+        <div class="text-2xl font-medium">${item.kn}</div>
+      </div>
+      <div class="bg-slate-50 rounded-lg p-3 mb-3">
+        <div class="text-xs text-slate-500 mb-1">中文</div>
+        <div class="text-lg">${item.cn}</div>
+      </div>
+      <div class="bg-slate-50 rounded-lg p-3">
+        <div class="text-xs text-slate-500 mb-1">例句</div>
+        <div class="text-base">${item.ex}</div>
+      </div>
+    </div>
+    <div id="vBtns" class="mt-5 grid grid-cols-2 gap-3">
+      <button class="option-btn" id="vReveal">👀 显示答案</button>
+      <button class="option-btn" id="vPlay" onclick="SPK.play('${item.kn}')">🔊 再听一遍</button>
+    </div>
+  `;
+
+  document.getElementById('vReveal').addEventListener('click', () => {
+    document.getElementById('vKana').textContent = item.kn;
+    document.getElementById('vBack').classList.remove('hidden');
+    document.getElementById('vBtns').innerHTML = `
+      <button class="option-btn" id="vUnknow">😅 不熟</button>
+      <button class="option-btn" id="vKnow">😎 认识</button>
+    `;
+    document.getElementById('vUnknow').addEventListener('click', () => vAns(false, item));
+    document.getElementById('vKnow').addEventListener('click', () => vAns(true, item));
+  });
+}
+
+function vAns(ok, item) {
+  ST.recVocab(item.id, ok);
+  if (ok) vState.know++; else vState.unknow++;
+  setTimeout(() => {
+    vState.idx++;
+    if (vState.idx >= vState.items.length) finVocab();
+    else renderVCard();
+  }, 400);
+}
+
+function startVocabQuiz() {
+  const seenIds = ST.vocabSeenIds();
+  if (seenIds.length < 4) {
+    toast('已学词不足 4 个，先学新词', 'error');
+    return;
+  }
+  const seen = seenIds.map(vocabById).filter(Boolean);
+  const items = shuffle(seen).slice(0, Math.min(10, seen.length));
+  vState = {
+    mode:'quiz', items, idx:0, know:0, unknow:0, startTs:Date.now(),
+    pool: flatVocab(),
+  };
+  document.getElementById('vocabHome').classList.add('hidden');
+  document.getElementById('vocabResult').classList.add('hidden');
+  document.getElementById('vocabCard').classList.add('hidden');
+  document.getElementById('vocabQuiz').classList.remove('hidden');
+  document.getElementById('vqTotal').textContent = items.length;
+  renderVQ();
+}
+
+function renderVQ() {
+  const item = vState.items[vState.idx];
+  document.getElementById('vqIndex').textContent = vState.idx + 1;
+  document.getElementById('vqCorrect').textContent = vState.know;
+  document.getElementById('vqProgress').style.width = (vState.idx / vState.items.length * 100) + '%';
+
+  const oldBody = document.getElementById('vqBody');
+  const body = oldBody.cloneNode(false);
+  body.innerHTML = '';
+  oldBody.replaceWith(body);
+  body.classList.add('qbody-fresh');
+  body.style.pointerEvents = 'none';
+  setTimeout(() => { body.style.pointerEvents = ''; body.classList.remove('qbody-fresh'); }, 500);
+  body.classList.remove('fade-in'); void body.offsetWidth; body.classList.add('fade-in');
+
+  // 4 选项: 1 正确 + 3 干扰
+  const distractors = shuffle(vState.pool.filter(v => v.id !== item.id && v.cn !== item.cn)).slice(0, 3);
+  const opts = shuffle([item, ...distractors]);
+  // 随机题型: 看汉字选释义 / 看释义选汉字 / 听音选词
+  const type = ['kanji-cn', 'cn-kanji', 'audio-kanji'][Math.floor(Math.random() * 3)];
+
+  let html;
+  if (type === 'kanji-cn') {
+    html = `
+      <div class="text-center mb-5">
+        <div class="text-xs text-slate-400 mb-1">看汉字选中文</div>
+        <div class="text-5xl font-bold mb-1">${item.jp}</div>
+        <div class="text-sm text-slate-500">${item.kn}</div>
+      </div>
+      <div class="grid grid-cols-2 gap-3">
+        ${opts.map(o => `<button class="option-btn text-base" data-id="${o.id}">${o.cn}</button>`).join('')}
+      </div>`;
+  } else if (type === 'cn-kanji') {
+    html = `
+      <div class="text-center mb-5">
+        <div class="text-xs text-slate-400 mb-1">看中文选日语</div>
+        <div class="text-3xl font-bold mb-2">${item.cn}</div>
+      </div>
+      <div class="grid grid-cols-2 gap-3">
+        ${opts.map(o => `<button class="option-btn" data-id="${o.id}">${o.jp}</button>`).join('')}
+      </div>`;
+  } else {
+    html = `
+      <div class="text-center mb-5">
+        <div class="text-xs text-slate-400 mb-2">听音选词</div>
+        <button onclick="SPK.play('${item.kn}')" class="bg-rose-500 text-white w-16 h-16 rounded-full text-2xl">🔊</button>
+      </div>
+      <div class="grid grid-cols-2 gap-3">
+        ${opts.map(o => `<button class="option-btn" data-id="${o.id}">${o.jp}</button>`).join('')}
+      </div>`;
+    setTimeout(() => SPK.play(item.kn), 250);
+  }
+  body.innerHTML = html;
+  body.querySelectorAll('.option-btn').forEach(b => {
+    b.addEventListener('click', () => vqAns(b, b.dataset.id === item.id, item));
+  });
+}
+
+function vqAns(btn, ok, item) {
+  if (!ok) {
+    btn.classList.add('wrong');
+    btn.disabled = true;
+    ST.recVocab(item.id, false);
+    vState.unknow++;
+    return;
+  }
+  document.querySelectorAll('#vqBody .option-btn').forEach(b => b.disabled = true);
+  btn.classList.add('correct');
+  ST.recVocab(item.id, true);
+  vState.know++;
+  document.getElementById('vqCorrect').textContent = vState.know;
+  setTimeout(() => {
+    vState.idx++;
+    if (vState.idx >= vState.items.length) finVocab();
+    else renderVQ();
+  }, 600);
+}
+
+function finVocab() {
+  const total = vState.items.length;
+  const el = Math.round((Date.now() - vState.startTs) / 1000);
+  ST.addSession({ type:'vocab', mode:vState.mode, total, know:vState.know, unknow:vState.unknow, seconds:el });
+  document.getElementById('vocabCard').classList.add('hidden');
+  document.getElementById('vocabQuiz').classList.add('hidden');
+  document.getElementById('vocabResult').classList.remove('hidden');
+  const labels = { learn:'学习', review:'复习', quiz:'测试' };
+  document.getElementById('vrTitle').textContent = `${labels[vState.mode]}完成！`;
+  document.getElementById('vrSummary').textContent = `${total} 个词汇 · 认识率 ${Math.round(vState.know/total*100)}%`;
+  document.getElementById('vrKnow').textContent = vState.know;
+  document.getElementById('vrUnknow').textContent = vState.unknow;
+  document.getElementById('vrTime').textContent = `${Math.floor(el/60)}'${String(el%60).padStart(2,'0')}"`;
+  document.getElementById('vrEmoji').textContent = vState.know/total >= 0.8 ? '🏆' : vState.know/total >= 0.5 ? '🎉' : '📚';
+}
+
+function exitVocab() {
+  vState = null;
+  document.getElementById('vocabCard').classList.add('hidden');
+  document.getElementById('vocabQuiz').classList.add('hidden');
+  document.getElementById('vocabResult').classList.add('hidden');
+  document.getElementById('vocabHome').classList.remove('hidden');
+  renderVocabHome();
 }
 
 /* ============== INIT ============== */
