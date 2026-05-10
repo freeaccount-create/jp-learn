@@ -20,11 +20,18 @@
   .btn-primary:disabled { background:#cbd5e1; cursor:not-allowed; }
   .btn-secondary { background:#fff; color:#475569; border:1px solid #e2e8f0; padding:.5rem 1rem; border-radius:.5rem; font-weight:500; transition:all .15s; }
   .btn-secondary:hover { border-color:#f43f5e; color:#f43f5e; }
-  .option-btn { padding:1rem; border:2px solid #e2e8f0; border-radius:.75rem; background:#fff; font-size:1.5rem; font-weight:600; cursor:pointer; transition:all .15s; }
-  .option-btn:hover:not(:disabled) { border-color:#f43f5e; background:#fff1f2; }
+  .option-btn { padding:1rem; border:2px solid #e2e8f0; border-radius:.75rem; background:#fff; font-size:1.5rem; font-weight:600; cursor:pointer; transition:border-color .15s, transform .1s; outline:none; }
+  .option-btn:hover:not(:disabled):not(.correct):not(.wrong) { border-color:#cbd5e1; }
+  .option-btn:active:not(:disabled) { transform: scale(0.97); }
+  .option-btn:focus { outline:none; }
+  .option-btn:focus-visible { outline:2px solid #94a3b8; outline-offset:2px; }
   .option-btn.correct { border-color:#16a34a; background:#dcfce7; }
   .option-btn.wrong { border-color:#dc2626; background:#fee2e2; }
   .option-btn:disabled { cursor:default; opacity:.85; }
+  /* When q-body has 'fresh' class (just loaded), block all hover/focus/active visuals briefly */
+  .qbody-fresh .option-btn, .qbody-fresh .option-btn:hover, .qbody-fresh .option-btn:focus, .qbody-fresh .option-btn:active {
+    border-color:#e2e8f0 !important; background:#fff !important; transform:none !important; outline:none !important;
+  }
   .recording-pulse { animation: pulse 1s infinite; }
   @keyframes pulse { 0%,100% { box-shadow:0 0 0 0 rgba(244,63,94,.5);} 50% { box-shadow:0 0 0 16px rgba(244,63,94,0);} }
   .fade-in { animation: fadeIn .3s ease; }
@@ -681,14 +688,17 @@ function renderQ() {
   document.getElementById('qIndex').textContent = pState.idx+1;
   document.getElementById('qCorrect').textContent = pState.correct;
   document.getElementById('qProgress').style.width = (pState.idx/pState.qs.length*100)+'%';
-  // Completely replace qBody to wipe any state, listeners, focus, hover from previous question
   const oldBody = document.getElementById('qBody');
   const body = oldBody.cloneNode(false);
   body.innerHTML = '';
   oldBody.replaceWith(body);
   if (document.activeElement && document.activeElement.blur) document.activeElement.blur();
+  body.classList.add('qbody-fresh');
   body.style.pointerEvents = 'none';
-  setTimeout(() => { body.style.pointerEvents = ''; }, 400);
+  setTimeout(() => {
+    body.style.pointerEvents = '';
+    body.classList.remove('qbody-fresh');
+  }, 500);
   body.classList.remove('fade-in'); void body.offsetWidth; body.classList.add('fade-in');
 
   if (pState.mode === 'see') {
@@ -839,8 +849,12 @@ function renderTQ() {
   body.innerHTML = '';
   oldBody.replaceWith(body);
   if (document.activeElement && document.activeElement.blur) document.activeElement.blur();
+  body.classList.add('qbody-fresh');
   body.style.pointerEvents = 'none';
-  setTimeout(() => { body.style.pointerEvents = ''; }, 400);
+  setTimeout(() => {
+    body.style.pointerEvents = '';
+    body.classList.remove('qbody-fresh');
+  }, 500);
   const k = q.kana;
   const ds = shuffle(tState.pool.filter(x=>x.r!==k.r)).slice(0,3);
   const opts = shuffle([k,...ds]);
