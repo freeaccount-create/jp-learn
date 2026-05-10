@@ -202,8 +202,8 @@
           <h2 class="text-2xl font-bold mb-2">练习完成！</h2>
           <div class="text-slate-500 mb-5">正确率 <span id="rRate" class="text-rose-600 font-bold text-xl"></span></div>
           <div class="grid grid-cols-3 gap-3 mb-5">
-            <div class="bg-emerald-50 rounded-lg p-3"><div class="text-xs text-emerald-700">正确</div><div class="text-2xl font-bold text-emerald-600" id="rCorrect"></div></div>
-            <div class="bg-rose-50 rounded-lg p-3"><div class="text-xs text-rose-700">错误</div><div class="text-2xl font-bold text-rose-600" id="rWrong"></div></div>
+            <div class="bg-emerald-50 rounded-lg p-3"><div class="text-xs text-emerald-700" id="rCorrectLabel">一次答对</div><div class="text-2xl font-bold text-emerald-600" id="rCorrect"></div></div>
+            <div class="bg-rose-50 rounded-lg p-3"><div class="text-xs text-rose-700">错误次数</div><div class="text-2xl font-bold text-rose-600" id="rWrong"></div></div>
             <div class="bg-slate-50 rounded-lg p-3"><div class="text-xs">用时</div><div class="text-2xl font-bold" id="rTime"></div></div>
           </div>
           <div class="flex gap-3 justify-center flex-wrap">
@@ -671,7 +671,7 @@ function startQuiz(mode) {
   const cnt = Math.min(parseInt(document.getElementById('qCount').value), pool.length);
   pState = {
     mode, pool, qs: shuffle(pool).slice(0,cnt), idx:0,
-    correct:0, wrong:0, startTs: Date.now(),
+    correct:0, wrong:0, firstTry:0, qWrongs:0, startTs: Date.now(),
   };
   document.getElementById('practiceModeSelect').classList.add('hidden');
   document.getElementById('practiceResult').classList.add('hidden');
@@ -685,6 +685,7 @@ function buildOpts(c) {
 }
 function renderQ() {
   const q = pState.qs[pState.idx];
+  pState.qWrongs = 0;
   document.getElementById('qIndex').textContent = pState.idx+1;
   document.getElementById('qCorrect').textContent = pState.correct;
   document.getElementById('qProgress').style.width = (pState.idx/pState.qs.length*100)+'%';
@@ -759,31 +760,55 @@ function renderQ() {
   }
 }
 function ans(btn, ok, q) {
-  document.querySelectorAll('.option-btn').forEach(b=>b.disabled=true);
-  if (pState.mode !== 'flash') {
-    document.querySelectorAll('.option-btn').forEach(b=>{
-      if (b.dataset.r === q.r) b.classList.add('correct');
-      else if (b === btn && !ok) b.classList.add('wrong');
-    });
+  if (pState.mode === 'flash') {
+    // flash mode: self-eval, advance immediately
+    document.querySelectorAll('.option-btn').forEach(b=>b.disabled=true);
+    ST.recKana(q.r, ok);
+    if (ok) pState.correct++;
+    else { pState.wrong++; ST.addMistake({ key:q.r, type:'kana', display:q.h }); }
+    setTimeout(() => {
+      pState.idx++;
+      if (pState.idx >= pState.qs.length) finQuiz();
+      else renderQ();
+    }, 600);
+    return;
   }
-  ST.recKana(q.r, ok);
-  if (ok) pState.correct++;
-  else { pState.wrong++; ST.addMistake({ key:q.r, type:'kana', display:q.h }); }
+  // see/hear modes: wrong = stay on this question, retry; correct = advance
+  if (!ok) {
+    btn.classList.add('wrong');
+    btn.disabled = true;
+    ST.recKana(q.r, false);
+    pState.wrong++;
+    pState.qWrongs++;
+    ST.addMistake({ key:q.r, type:'kana', display:q.h });
+    return;
+  }
+  // correct: highlight, disable all, advance
+  document.querySelectorAll('.option-btn').forEach(b=>b.disabled=true);
+  btn.classList.add('correct');
+  ST.recKana(q.r, true);
+  pState.correct++;
+  if (pState.qWrongs === 0) pState.firstTry++;
+  document.getElementById('qCorrect').textContent = pState.correct;
   setTimeout(() => {
     pState.idx++;
     if (pState.idx >= pState.qs.length) finQuiz();
     else renderQ();
-  }, ok ? 600 : 1100);
+  }, 600);
 }
 function finQuiz() {
   const total = pState.qs.length;
-  const rate = Math.round(pState.correct/total*100);
+  // For see/hear modes (retry-until-correct), rate = first-try correct rate
+  // For flash mode, rate = correct rate as before
+  const isFlash = pState.mode === 'flash';
+  const rate = Math.round((isFlash ? pState.correct : pState.firstTry) / total * 100);
   const el = Math.round((Date.now()-pState.startTs)/1000);
-  ST.addSession({ type:'practice', mode:pState.mode, total, correct:pState.correct, wrong:pState.wrong, seconds:el });
+  ST.addSession({ type:'practice', mode:pState.mode, total, correct:isFlash?pState.correct:pState.firstTry, wrong:pState.wrong, seconds:el });
   document.getElementById('practiceQuiz').classList.add('hidden');
   document.getElementById('practiceResult').classList.remove('hidden');
   document.getElementById('rRate').textContent = rate+'%';
-  document.getElementById('rCorrect').textContent = pState.correct;
+  document.getElementById('rCorrectLabel').textContent = isFlash ? '正确' : '一次答对';
+  document.getElementById('rCorrect').textContent = isFlash ? pState.correct : pState.firstTry;
   document.getElementById('rWrong').textContent = pState.wrong;
   document.getElementById('rTime').textContent = `${Math.floor(el/60)}'${String(el%60).padStart(2,'0')}"`;
   document.getElementById('rEmoji').textContent = rate>=90?'🏆':rate>=70?'🎉':rate>=50?'💪':'📚';
